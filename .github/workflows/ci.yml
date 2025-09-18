@@ -26,6 +26,11 @@ jobs:
         with: { node-version: 20 }
       - name: Backend deps
         working-directory: backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ums_auth?schema=public
+          MONGODB_URI: mongodb://localhost:27017/ums_ci
+          JWT_SECRET: ci
+          ADMIN_INVITE_SECRET: ci-secret
         run: |
           npm ci
           npx prisma generate
