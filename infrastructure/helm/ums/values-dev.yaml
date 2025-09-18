@@ -1,0 +1,18 @@
+﻿backend:
+  image:
+    repository: ghcr.io/example/ums-backend
+    tag: dev
+  env:
+    enableMetrics: true
+    corsOrigin: http://localhost:5173
+
+frontend:
+  image:
+    repository: ghcr.io/example/ums-frontend
+    tag: dev
+  env:
+    apiUrl: http://localhost:4000
+
+config:
+  corsOrigin: http://localhost:5173
+  enableMetrics: "true"

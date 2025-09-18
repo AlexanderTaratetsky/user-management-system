@@ -1,0 +1,8 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ums-config
+  namespace: {{ .Values.namespace }}
+data:
+  CORS_ORIGIN: "{{ .Values.config.corsOrigin }}"
+  ENABLE_METRICS: "{{ .Values.config.enableMetrics }}"

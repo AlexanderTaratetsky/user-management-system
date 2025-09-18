@@ -1,0 +1,32 @@
+﻿namespace: ums
+imagePullPolicy: IfNotPresent
+secretName: ums-secrets
+
+backend:
+  image:
+    repository: ghcr.io/example/ums-backend
+    tag: latest
+  replicaCount: 1
+  service:
+    port: 80
+    targetPort: 4000
+  env:
+    enableMetrics: true
+    corsOrigin: http://localhost:5173
+  resources: {}
+
+frontend:
+  image:
+    repository: ghcr.io/example/ums-frontend
+    tag: latest
+  replicaCount: 1
+  service:
+    port: 80
+    targetPort: 80
+  env:
+    apiUrl: http://backend
+  resources: {}
+
+config:
+  corsOrigin: http://localhost:5173
+  enableMetrics: "true"

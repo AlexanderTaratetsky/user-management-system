@@ -1,0 +1,34 @@
+﻿backend:
+  image:
+    repository: ghcr.io/example/ums-backend
+    tag: prod
+  replicaCount: 3
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  env:
+    enableMetrics: true
+    corsOrigin: https://app.example.com
+
+frontend:
+  image:
+    repository: ghcr.io/example/ums-frontend
+    tag: prod
+  replicaCount: 3
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 150m
+      memory: 128Mi
+  env:
+    apiUrl: https://api.example.com
+
+config:
+  corsOrigin: https://app.example.com
+  enableMetrics: "true"

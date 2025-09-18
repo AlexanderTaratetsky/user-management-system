@@ -1,0 +1,10 @@
+node_modules
+.env
+.env*
+dist
+coverage
+.vscode
+*.local
+.DS_Store
+terraform.tfstate*
+.kube-secrets.yaml
