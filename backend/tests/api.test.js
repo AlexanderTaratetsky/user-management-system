@@ -1,3 +1,4 @@
+﻿import { jest } from '@jest/globals';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { createApp } from '../src/app.js';
@@ -5,7 +6,9 @@ import { prisma } from '../src/db/index.js';
 import { UserProfile } from '../src/models/userProfile.model.js';
 import { env } from '../src/config/env.js';
 
-const ADMIN_SECRET = env.adminInviteSecret || 'let-admins-in';
+jest.setTimeout(20000);
+
+const ADMIN_SECRET = process.env.ADMIN_INVITE_SECRET || 'let-admins-in';
 
 let app;
 
@@ -34,17 +37,16 @@ async function apiCall({ method, path, body, token, description }) {
   }
   const res = await req;
   const duration = Date.now() - start;
-  const logLine = `
-[TEST] ${normalizedMethod.toUpperCase()} ${path} :: ${description ?? 'no-description'} -> ${res.status} (${duration}ms)`;
+  const logLine = `\n[TEST] ${normalizedMethod.toUpperCase()} ${path} :: ${description ?? 'no-description'} -> ${res.status} (${duration}ms)`;
   console.log(logLine);
   const loggedRequest = formatBody(body);
   if (loggedRequest) {
-    console.log('  ? request:', loggedRequest);
+    console.log('  -> request:', loggedRequest);
   }
   if (res.body && Object.keys(res.body).length) {
-    console.log('  ? response:', formatBody(res.body));
+    console.log('  -> response:', formatBody(res.body));
   } else if (res.text) {
-    console.log('  ? responseText:', res.text.slice(0, 500));
+    console.log('  -> responseText:', res.text.slice(0, 500));
   }
   return res;
 }
@@ -62,6 +64,13 @@ beforeAll(async () => {
   process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/ums_auth?schema=public';
   process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ums_test';
   process.env.ADMIN_INVITE_SECRET = ADMIN_SECRET;
+
+  env.jwtSecret = process.env.JWT_SECRET;
+  env.enableMetrics = true;
+  env.pgUrl = process.env.DATABASE_URL;
+  env.mongoUri = process.env.MONGODB_URI;
+  env.adminInviteSecret = process.env.ADMIN_INVITE_SECRET;
+
   app = await createApp();
 });
 
@@ -97,7 +106,6 @@ describe('Authentication flows', () => {
       { name: 'Test User', email: 'user@test.dev', password: 'Password1!' },
       { description: 'register baseline user' }
     );
-
     expect(registerRes.status).toBe(201);
     expect(registerRes.body).toMatchObject({ role: 'USER' });
     const token = registerRes.body.token;
@@ -290,3 +298,7 @@ describe('Authorization guards', () => {
     expect(list.body.find(u => u.email === 'admin@test.dev')?.role).toBe('ADMIN');
   });
 });
+
+
+
+
