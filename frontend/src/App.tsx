@@ -1,4 +1,4 @@
-import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+﻿import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, type ReactElement } from 'react';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -6,7 +6,7 @@ import Profile from './pages/Profile';
 import AdminUsers from './pages/AdminUsers';
 import StatusBar from './components/StatusBar';
 import { useAppDispatch, useAppSelector } from './util/hooks';
-import { fetchMe, setStatus } from './store/slices/authSlice';
+import { fetchMe, logout, setStatus } from './store/slices/authSlice';
 
 function Protected({ children, requiredRole }: { children: ReactElement; requiredRole?: 'USER' | 'ADMIN' }) {
   const dispatch = useAppDispatch();
@@ -55,12 +55,19 @@ export default function App() {
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector(state => state.auth);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token && !user) {
       dispatch(fetchMe());
     }
   }, [dispatch, token, user]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(setStatus({ status: 'success', message: 'Logged out' }));
+    navigate('/login');
+  };
 
   return (
     <div className="app-shell">
@@ -71,7 +78,16 @@ export default function App() {
             <p className="subtitle">Full-stack reference portal</p>
           </div>
           <div className="user-info">
-            {user?.name ? <span>Signed in as <strong>{user.name}</strong></span> : <span>Guest session</span>}
+            {user?.name ? (
+              <>
+                <span>Signed in as <strong>{user.name}</strong></span>
+                <button type="button" className="btn ghost" onClick={handleLogout}>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <span>Guest session</span>
+            )}
           </div>
         </div>
         <nav className="app-nav">
@@ -106,3 +122,4 @@ export default function App() {
     </div>
   );
 }
+

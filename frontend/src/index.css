@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
   font-weight: 400;
@@ -35,6 +35,14 @@ body {
   margin: 0 auto;
 }
 
+
+.app-header .inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .app-header {
   background: linear-gradient(135deg, #0f172a, #1e293b);
   color: white;
@@ -60,6 +68,9 @@ body {
 .user-info {
   font-size: 0.95rem;
   color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .app-nav {
@@ -303,3 +314,4 @@ select:focus {
     transform: translate(-50%, 0);
   }
 }
+
