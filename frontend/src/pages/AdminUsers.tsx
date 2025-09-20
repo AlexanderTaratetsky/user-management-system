@@ -44,7 +44,8 @@ export default function AdminUsers() {
 
     fetchUsers();
 
-    sock = io(import.meta.env.VITE_API_URL);
+    const socketUrl = import.meta.env.VITE_API_URL || (window.location.protocol + '//' + window.location.hostname + ':4000');
+    sock = io(socketUrl);
     sock.on('heartbeat', ts => {
       const time = new Date(ts).toLocaleTimeString();
       dispatch(setStatus({ status: 'success', message: 'Realtime heartbeat ' + time }));
