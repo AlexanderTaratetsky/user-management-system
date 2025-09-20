@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import axios from 'axios';
 import api from '../../lib/api';
 import { formatError } from '../../util/errors';
 
@@ -28,11 +29,20 @@ const initialState: State = {
   message: 'Ready'
 };
 
+const AUTH_RESET = '__AUTH_RESET__';
+
 export const fetchMe = createAsyncThunk<User, void, { rejectValue: string }>('auth/me', async (_, thunkApi) => {
   try {
     const { data } = await api.get<User>('/me');
     return data;
   } catch (err) {
+    if (axios.isAxiosError(err)) {
+      const reason = (err.response?.data as any)?.reason;
+      if (reason === 'TOKEN_INVALID' || reason === 'TOKEN_MISSING' || reason === 'PROFILE_NOT_FOUND') {
+        localStorage.removeItem('token');
+        return thunkApi.rejectWithValue(AUTH_RESET);
+      }
+    }
     return thunkApi.rejectWithValue(formatError(err, 'Failed to load profile'));
   }
 });
@@ -141,6 +151,14 @@ const slice = createSlice({
         state.message = 'Profile loaded';
       })
       .addCase(fetchMe.rejected, (state, action) => {
+        if (action.payload === AUTH_RESET) {
+          state.token = null;
+          state.user = null;
+          state.status = 'idle';
+          state.message = 'Session expired, please log in again';
+          state.lastError = undefined;
+          return;
+        }
         const message = action.payload || action.error.message || 'Failed to load profile';
         state.status = 'error';
         state.message = message;
@@ -151,3 +169,4 @@ const slice = createSlice({
 
 export const { logout, setStatus } = slice.actions;
 export default slice.reducer;
+
