@@ -1,4 +1,4 @@
-﻿# User Management System
+# User Management System
 
 Fullstack reference app: Express + JWT + MongoDB (profiles) + PostgreSQL (auth/audit) + React/TS + Docker + K8s + Terraform + CI.
 
@@ -58,16 +58,15 @@ Notes:
 ## Deployment Guide
 1. **Local Compose:** `docker compose -f infrastructure/docker-compose.yml up -d --build` builds containers, starts Postgres, Mongo, backend, and frontend.
 2. **Kubernetes:** apply `infrastructure/kubernetes/namespace.yaml`, create the `ums-secrets` secret with JWT/database credentials (including `ADMIN_INVITE_SECRET`), then apply the backend/frontend deployment and service manifests.
-3. **Terraform:** `cd infrastructure/terraform && terraform init && terraform apply` provisions AWS S3 for logs and ECR repositories for container pushes.
+3. **Terraform:** ensure AWS credentials are available in your shell (e.g., export `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, optional `AWS_SESSION_TOKEN`, and set `AWS_REGION`) before running `cd infrastructure/terraform && terraform init && terraform apply` to provision the S3 log bucket and ECR repositories.
 4. **Helm:** choose an environment file (e.g., `values-dev.yaml` or `values-prod.yaml`) and deploy with `helm upgrade --install ums infrastructure/helm/ums -f infrastructure/helm/ums/values.yaml -f infrastructure/helm/ums/values-dev.yaml`.
 5. **CI/CD:** `.github/workflows/ci.yml` runs backend migrations/tests against containerized Postgres/Mongo and builds the frontend on every push/PR to `main`.
 
 ## Infrastructure Notes
 - Docker Compose bundles Postgres, Mongo, backend, and frontend (infrastructure/docker-compose.yml).
 - Kubernetes manifests under infrastructure/kubernetes expect a secret named ums-secrets.
-- Terraform (infrastructure/terraform) provisions AWS S3 and ECR repositories.
+- Terraform (infrastructure/terraform) provisions AWS S3 and ECR repositories; ensure credentials are configured via environment variables or an AWS profile before running the Terraform commands.
 
 ## API Docs
 - Swagger UI: http://localhost:4000/docs
 - Markdown summary in docs/api/openapi.md
-
